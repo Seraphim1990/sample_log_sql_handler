@@ -1,0 +1,10 @@
+[package]
+name = "sample_log_sql_handler"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+sample_logger = { git = "https://github.com/Seraphim1990/sim_log_azot.git" }
+rusqlite = { version = "0.38.0", features = ["bundled"] }
+chrono = "0.4.42"
+rand = "0.10.0-rc.6"
