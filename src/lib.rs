@@ -1,3 +1,4 @@
+use std::cell::RefCell;
 use rusqlite::{params, Connection, Result};
 use sample_logger::{LogHandler, LogRecord};
 
@@ -6,6 +7,7 @@ pub struct SqliteLogHandler {
     level: i32,
     max_push: i32,
     buffer: Vec<(String, String, String)>,
+    status: RefCell<bool>
 }
 
 pub struct SqliteLogBuilder {
@@ -51,6 +53,7 @@ impl SqliteLogBuilder {
                 level: self.level,
                 max_push: self.max_push,
                 buffer: Vec::with_capacity(self.max_push as usize),
+                status: RefCell::new(true)
             }
         )
     }
@@ -74,6 +77,7 @@ impl SqliteLogHandler {
                 level: i32::MIN,
                 max_push: 10,
                 buffer: Vec::with_capacity(10),
+                status: RefCell::new(true)
             }
         )
     }
@@ -81,7 +85,7 @@ impl SqliteLogHandler {
 
 impl LogHandler for SqliteLogHandler {
     fn handle(&mut self, record: &LogRecord) {
-        if record.lvl < self.level {
+        if record.lvl < self.level || !*self.status.borrow(){
             return;
         }
         self.buffer.push((record.heading.to_string(), record.msg.clone(), record.timestamp.to_string()));
@@ -92,8 +96,16 @@ impl LogHandler for SqliteLogHandler {
         }
     }
     fn flush(&mut self) {
-        if self.buffer.is_empty() { return; }
-        let tx = self.connection.transaction().unwrap();
+        if self.buffer.is_empty() || !*self.status.borrow() { return; }
+
+        let tx = match self.connection.transaction() {
+            Ok(tx) => tx,
+            Err(e) => {
+                *self.status.borrow_mut() = false;
+                return;
+            },
+        };
+
         self.buffer.iter().for_each(|(heading, message, timestamp)| {
             tx.execute(
                 "INSERT INTO logs (heading, message, timestamp) VALUES (?1, ?2, ?3)",
