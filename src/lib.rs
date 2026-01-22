@@ -1,6 +1,38 @@
 use std::cell::RefCell;
 use rusqlite::{params, Connection, Result};
-use sample_logger::{LogHandler, LogRecord};
+use sample_logger::{LogHandler, LogLevel, LogRecord, init_logger_with_handlers};
+
+#[derive(LogLevel)]
+#[log_level(color = "\033[37m", heading = "DEBUG", level = 0)]
+struct Debug;
+
+#[derive(LogLevel)]
+#[log_level(color = "\033[35m", heading = "INFO", level = 1)]
+struct Info;
+
+#[derive(LogLevel)]
+#[log_level(color = "\033[34m", heading = "INFO", level = 2)]
+struct Event;
+
+#[derive(LogLevel)]
+#[log_level(color = "\033[33m", heading = "WARN", level = 3)]
+struct Warning;
+
+#[derive(LogLevel)]
+#[log_level(color = "\033[31m", heading = "ERROR", level = 4)]
+struct Error;
+
+pub fn init_log(level: i32) {
+    let sql_log = Box::new(
+        SqliteLogBuilder::new()
+            .level(1)
+            .max_push(100)
+            .connection("log/log.sqlite")
+            .build()
+            .unwrap());
+    let logger: Vec<Box<dyn LogHandler>> = vec![sql_log];
+    init_logger_with_handlers(logger, level);
+}
 
 pub struct SqliteLogHandler {
     connection: Connection,
