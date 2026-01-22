@@ -4,23 +4,23 @@ use sample_logger::{LogHandler, LogLevel, LogRecord, init_logger_with_handlers};
 
 #[derive(LogLevel)]
 #[log_level(color = "\033[37m", heading = "DEBUG", level = 0)]
-struct Debug;
+pub struct Debug;
 
 #[derive(LogLevel)]
 #[log_level(color = "\033[35m", heading = "INFO", level = 1)]
-struct Info;
+pub struct Info;
 
 #[derive(LogLevel)]
 #[log_level(color = "\033[34m", heading = "INFO", level = 2)]
-struct Event;
+pub struct Event;
 
 #[derive(LogLevel)]
 #[log_level(color = "\033[33m", heading = "WARN", level = 3)]
-struct Warning;
+pub struct Warning;
 
 #[derive(LogLevel)]
 #[log_level(color = "\033[31m", heading = "ERROR", level = 4)]
-struct Error;
+pub struct Error;
 
 pub fn init_log(level: i32) {
     let sql_log = Box::new(
