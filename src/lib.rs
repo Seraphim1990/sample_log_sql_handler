@@ -27,7 +27,7 @@ pub fn init_log(level: i32) {
         SqliteLogBuilder::new()
             .level(1)
             .max_push(100)
-            .connection("log/log.sqlite")
+            .connection("log.sqlite")
             .build()
             .unwrap());
     let logger: Vec<Box<dyn LogHandler>> = vec![sql_log];
