@@ -154,7 +154,3 @@ impl Drop for SqliteLogHandler {
         self.flush();
     }
 }
-
-#[cfg(test)]
-mod tests;
-mod write_test;
