@@ -11,7 +11,7 @@ pub struct Debug;
 pub struct Info;
 
 #[derive(LogLevel)]
-#[log_level(color = "\033[34m", heading = "INFO", level = 2)]
+#[log_level(color = "\033[34m", heading = "EVENT", level = 2)]
 pub struct Event;
 
 #[derive(LogLevel)]
